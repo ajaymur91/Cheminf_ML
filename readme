@@ -1,0 +1,17 @@
+cat data | awk '{print $2}' > iupac
+python iupac2smiles.py > out_smiles
+seq 0 204 > index
+paste index out_smiles | column -t > index_iupac_smiles.txt
+bash make_ff.sh
+mv *.mol2 gmx/
+mv *.gro gmx/
+mv *.top gmx/
+mv *.bib gmx/
+
+#cat out_smiles | awk '{print $2}' > alk_smiles
+paste out_smiles | awk '{print $2}' > Smiles
+paste Smiles data_excel.csv | column -t > full_data.csv
+sed '/FAIL/d' full_data.csv > clean_data.csv
+
+awk '{for(i=1;i<=NF-2;i++) printf $i" "; print ""}' clean_data.csv > clean_data2.csv
+
